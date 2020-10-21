@@ -1,0 +1,43 @@
+version: '3'
+
+services:
+  database:
+    container_name: database
+    image: postgres:latest
+    environment:
+      - POSTGRES_DB=${DATABASE_NAME}
+      - POSTGRES_USER=${DATABASE_USER}
+      - POSTGRES_PASSWORD=${DATABASE_PASSWORD}
+    ports:
+      - "5432:5432"
+
+  php-fpm:
+    container_name: php
+    build:
+      context: ./php-fpm
+    depends_on:
+      - database
+    environment:
+      - APP_ENV=${APP_ENV}
+      - APP_SECRET=${APP_SECRET}
+      - DATABASE_URL=postgres://${DATABASE_USER}:${DATABASE_PASSWORD}@database:5432/${DATABASE_NAME}
+    volumes:
+      - ../src:/var/www
+
+  nginx:
+    container_name: nginx
+    build:
+      context: ./nginx
+    volumes:
+      - ../src:/var/www
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+      - ./nginx/sites/:/etc/nginx/sites-available
+      - ./nginx/conf.d/:/etc/nginx/conf.d
+      - ./logs:/var/log
+    depends_on:
+      - php-fpm
+    ports:
+      - "80:80"
+      - "443:443"
+
+
