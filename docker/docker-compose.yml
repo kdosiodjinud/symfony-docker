@@ -10,6 +10,8 @@ services:
       - POSTGRES_PASSWORD=${DATABASE_PASSWORD}
     ports:
       - "5432:5432"
+    volumes:
+      - ./database:/var/lib/postgresql/data
 
   php-fpm:
     container_name: php
