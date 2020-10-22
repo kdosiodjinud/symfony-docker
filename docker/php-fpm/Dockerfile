@@ -10,6 +10,16 @@ RUN set -ex && apk --no-cache add postgresql-dev
 
 RUN docker-php-ext-install pdo pdo_pgsql
 
+RUN apk add --update --virtual .build-deps autoconf g++ make zlib-dev curl-dev libidn2-dev libevent-dev icu-dev libidn-dev
+
+RUN pecl install raphf propro && \
+    docker-php-ext-enable raphf propro && \
+    pecl install pecl_http && \
+    echo -e "extension=raphf.so\nextension=propro.so\nextension=http.so" > /usr/local/etc/php/conf.d/docker-php-ext-http.ini && \
+    rm -rf /usr/local/etc/php/conf.d/docker-php-ext-raphf.ini && \
+    rm -rf /usr/local/etc/php/conf.d/docker-php-ext-propro.ini && \
+    rm -rf /tmp/*
+
 COPY --from=composer /usr/bin/composer /usr/bin/composer
 
 WORKDIR /var/www
