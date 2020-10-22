@@ -4,6 +4,7 @@
     "require": {
         "php": "^7.2.5",
         "ext-ctype": "*",
+        "ext-http": "*",
         "ext-iconv": "*",
         "sensio/framework-extra-bundle": "^5.5",
         "symfony/console": "5.0.*",
@@ -12,12 +13,19 @@
         "symfony/framework-bundle": "5.0.*",
         "symfony/orm-pack": "^1.0",
         "symfony/twig-bundle": "5.0.*",
-        "symfony/yaml": "5.0.*",
-      "ext-http": "*"
+        "symfony/yaml": "5.0.*"
     },
     "require-dev": {
         "doctrine/doctrine-fixtures-bundle": "^3.3",
-        "symfony/maker-bundle": "^1.14"
+        "lmc/coding-standard": "^2.0",
+        "phpstan/phpstan": "^0.12.50",
+        "phpstan/phpstan-beberlei-assert": "^0.12.3",
+        "phpstan/phpstan-phpunit": "^0.12.16",
+        "phpstan/phpstan-strict-rules": "^0.12.5",
+        "phpstan/phpstan-symfony": "^0.12.10",
+        "phpunit/phpunit": "^9",
+        "symfony/maker-bundle": "^1.14",
+        "symfony/phpunit-bridge": "^5.1"
     },
     "config": {
         "preferred-install": {
@@ -54,7 +62,16 @@
         ],
         "post-update-cmd": [
             "@auto-scripts"
-        ]
+        ],
+        "analyze": [
+            "@ecs-fix",
+            "@phpunit",
+            "@phpstan"
+        ],
+        "ecs": "./vendor/bin/ecs check src/ tests/ --ansi",
+        "ecs-fix": "./vendor/bin/ecs check src/ tests/ --ansi --fix",
+        "phpstan": "./vendor/bin/phpstan analyse",
+        "phpunit": "./vendor/phpunit/phpunit/phpunit -c ./phpunit.xml.dist"
     },
     "conflict": {
         "symfony/symfony": "*"
