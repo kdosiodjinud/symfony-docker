@@ -13,6 +13,6 @@ class HomeController extends AbstractController
      */
     public function index(): Response
     {
-        return new Response('Hello Johny! :-p');
+        return new Response('Hello Johny! :-)');
     }
 }

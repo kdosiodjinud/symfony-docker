@@ -1,0 +1,139 @@
+#!/bin/bash
+
+usage () {
+  echo "Example syntax: symfony -a start"
+  echo "  -a (start|stop)"
+  echo "  -a rebuild [-t <nginx|php-fpm>]"
+  echo "  -a deploy -v (break|nobreak|fixup)"
+  echo "  -a tests"
+}
+
+while getopts ':a:h:t:v:' option
+do
+    case "$option" in
+        a  ) ACTION=${OPTARG};;
+        t  ) REBUILD_TYPE=${OPTARG};;
+        v  ) DEPLOY_TYPE=${OPTARG};;
+        h  ) usage; exit;;
+        \? ) echo "Unknown option: -$OPTARG" >&2; exit 1;;
+        :  ) echo "Missing option argument for -$OPTARG" >&2; exit 1;;
+        *  ) echo "Unimplemented option: -$OPTARG" >&2; exit 1;;
+    esac
+done
+
+subStart () {
+  echo "Starting local stack"
+  docker-compose -f ./docker/docker-compose.yml up --detach
+  echo "Running on: http://localhost"
+}
+subStop () {
+  echo "Stoping local stack"
+  docker-compose -f ./docker/docker-compose.yml stop
+}
+subRebuild () {
+  case "$REBUILD_TYPE" in
+    ("nginx")
+      echo "Rebuild nginx"
+      docker build -f docker/nginx/Dockerfile . --no-cache
+    exit;;
+    ("php-fpm")
+      echo "Rebuild php-fpm"
+      docker build -f docker/php-fpm/Dockerfile . --no-cache
+    exit;;
+    (*)
+      echo "Rebuild nginx + php-fpm"
+      docker build -f docker/nginx/Dockerfile . --no-cache
+      docker build -f docker/php-fpm/Dockerfile . --no-cache
+    exit;;
+  esac
+}
+subDeploy () {
+  echo "Deploy"
+  source kubernetes/app_version
+
+VERSION_NGINX_BREAK="$(cut -d'.' -f1 <<<"$VERSION_NGINX")"
+VERSION_NGINX_NOBREAK="$(cut -d'.' -f2 <<<"$VERSION_NGINX")"
+VERSION_NGINX_FIXUP="$(cut -d'.' -f3 <<<"$VERSION_NGINX")"
+VERSION_PHP_FPM_BREAK="$(cut -d'.' -f1 <<<"$VERSION_PHP_FPM")"
+VERSION_PHP_FPM_NOBREAK="$(cut -d'.' -f2 <<<"$VERSION_PHP_FPM")"
+VERSION_PHP_FPM_FIXUP="$(cut -d'.' -f3 <<<"$VERSION_PHP_FPM")"
+
+    case "$REBUILD_TYPE" in
+    ("break")
+      echo "Deploy version with breaking changes!"
+
+      ((VERSION_NGINX_BREAK=$VERSION_NGINX_BREAK+1))
+      VERSION_NGINX_NOBREAK=0
+      VERSION_NGINX_FIXUP=0
+
+      ((VERSION_PHP_FPM_BREAK=$VERSION_PHP_FPM_BREAK+1))
+      VERSION_PHP_FPM_NOBREAK=0
+      VERSION_PHP_FPM_FIXUP=0
+    ;;
+    ("nobreak")
+      echo "Deploy version without breaking changes!"
+
+      ((VERSION_NGINX_NOBREAK=$VERSION_NGINX_NOBREAK+1))
+      VERSION_NGINX_FIXUP=0
+
+      ((VERSION_PHP_FPM_NOBREAK=$VERSION_PHP_FPM_NOBREAK+1))
+      VERSION_PHP_FPM_FIXUP=0
+    ;;
+    ("fixup")
+      echo "Deploy version with fixup!"
+
+      ((VERSION_NGINX_FIXUP=$VERSION_NGINX_FIXUP+1))
+
+      ((VERSION_PHP_FPM_FIXUP=$VERSION_PHP_FPM_FIXUP+1))
+    ;;
+    (*)
+      echo "Missing deploy type option! Use option -h for more information."
+    exit;;
+  esac
+
+  NEW_VERSION_NGINX="$VERSION_NGINX_BREAK.$VERSION_NGINX_NOBREAK.$VERSION_NGINX_FIXUP"
+  NEW_VERSION_PHP_FPM="$VERSION_PHP_FPM_BREAK.$VERSION_PHP_FPM_NOBREAK.$VERSION_PHP_FPM_FIXUP"
+
+  docker build -f docker/php-fpm/Dockerfile-prod -t gcr.io/symfony-1/php-fpm:$NEW_VERSION_NGINX .
+  docker build -f docker/nginx/Dockerfile-prod -t gcr.io/symfony-1/nginx:$NEW_VERSION_PHP_FPM .
+
+  docker push gcr.io/symfony-1/nginx:$NEW_VERSION_NGINX
+  docker push gcr.io/symfony-1/php-fpm:$NEW_VERSION_PHP_FPM
+
+  echo "VERSION_NGINX=$NEW_VERSION_NGINX" > kubernetes/app_version
+  echo "VERSION_PHP_FPM=$NEW_VERSION_PHP_FPM" >> kubernetes/app_version
+
+  sed "s/VERSION_PLACEHOLDER/$NEW_VERSION_NGINX/g" kubernetes/nginx_deployment.yaml > kubernetes/nginx_deployment_fill.yaml
+  sed "s/VERSION_PLACEHOLDER/$NEW_VERSION_PHP_FPM/g" kubernetes/php_deployment.yaml > kubernetes/php_deployment_fill.yaml
+
+  kubectl apply -f kubernetes/nginx_deployment_fill.yaml
+  kubectl apply -f kubernetes/php_deployment_fill.yaml
+
+  rm kubernetes/nginx_deployment_fill.yaml kubernetes/php_deployment_fill.yaml
+
+  kubectl get pods
+  kubectl get svc
+  kubectl get deployments -o wide
+
+  echo "DEPLOYED!"
+}
+
+subTests () {
+  echo "Starting local stack"
+  docker-compose -f ./docker/docker-compose.yml up --detach
+  echo "Starting tests"
+  docker exec -it php composer analyze
+}
+
+
+
+case "$ACTION" in
+    ("start") subStart; exit;;
+    ("stop") subStop; exit;;
+    ("rebuild") subRebuild "$REBUILD_TYPE"; exit;;
+    ("deploy") subDeploy "$DEPLOY_TYPE"; exit;;
+    ("tests") subTests "$DEPLOY_TYPE"; exit;;
+    (*) echo "-a must be included with value (start|stop|rebuild|deploy)" >&2; exit 1 ;;
+esac
+
+}

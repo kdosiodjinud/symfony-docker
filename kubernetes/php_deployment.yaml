@@ -18,4 +18,4 @@ spec:
     spec:
       containers:
       - name: php-fpm
-        image: gcr.io/symfony-1/php-fpm:0.0.15
+        image: gcr.io/symfony-1/php-fpm:VERSION_PLACEHOLDER

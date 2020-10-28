@@ -11,6 +11,22 @@ All commands are run in the root directory.
 |./src/.env.prod| app env variables for prod development (production build remove this file to .env)|
 |./src/.env.test| app env variables for test development|
 
+## Project control script, all what you need
+```sh
+$ ./project -a (start|stop)
+$ ./project -a rebuild [-t <nginx|php-fpm|database>]
+$ ./project -a deploy -v 0.1.2
+$ ./project -a tests
+```
+
+That's all!
+
+---
+
+# For understanding control script, here is manual way
+
+---
+
 ## Local development
 Start postgres db (no-persist), php-fpm and nginx listening on localhost:80
 ```
@@ -58,7 +74,7 @@ $ docker build -f docker/nginx/Dockerfile-prod -t gcr.io/symfony-1/nginx:0.0.1 .
 
 ### Push images to Google docker registry
 ```sh
-$ docker push gcr.io/symfony-1/php-fpm:0.0.1`
+$ docker push gcr.io/symfony-1/php-fpm:0.0.1
 $ docker push gcr.io/symfony-1/nginx:0.0.1
 ```
 

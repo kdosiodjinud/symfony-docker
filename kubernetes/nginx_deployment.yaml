@@ -18,6 +18,6 @@ spec:
     spec:
       containers:
         - name: nginx
-          image: gcr.io/symfony-1/nginx:0.0.15
+          image: gcr.io/symfony-1/nginx:VERSION_PLACEHOLDER
           ports:
             - containerPort: 80
