@@ -17,7 +17,7 @@ Start postgres db (no-persist), php-fpm and nginx listening on localhost:80
 $ docker-compose -f ./docker/docker-compose.yml up
 ```
 #### Predefined app commands
-*Composer commands / symfonyn commands run in webroot directory in PHP container.*
+*Composer commands / symfony commands run in webroot directory in PHP container.*
 ```sh
 $ composer ecs          <-- code style check
 $ composer ecs-fix      <-- code style check with auto-fix
@@ -26,8 +26,8 @@ $ composer phpunit      <-- classic phpunit tests
 ```
 #### Useful local commands
 ```sh
-$ docker ps          <-- list running containers
-$ docker exec -it [container_id] /bin/bash   <-- connect into container
+$ docker ps                                 <-- list running containers
+$ docker exec -it [container_id] /bin/bash  <-- connect into container
 ```
 
 ## Deploy on cloud
