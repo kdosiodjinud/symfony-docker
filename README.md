@@ -7,15 +7,35 @@ All commands are run in the root directory.
 | Path | Usage |
 | ------ | ------ |
 |./docker/.env| build env variables for build via docker-compose (db credentials etc.)|
+|./kubernetes/app_version| deployed images versions (use for next build)|
+|./kubernetes/project_info| after init project store info about google project id|
 |./src/.env| app env variables for local development|
 |./src/.env.prod| app env variables for prod development (production build remove this file to .env)|
 |./src/.env.test| app env variables for test development|
+
+
+## Create gCloud ENV
+### First you need gcloud SDK
+How to install: https://cloud.google.com/sdk/docs/install
+
+### Create project and init production
+Before start init check your google - gcloud require billing account! 
+Prepare it (insert payment card) before start init!
+```sh
+./init
+```
+
+### Custom domain for your gcloud app
+```sh 
+$ kubectl get svc   <-- show you LoadBalancer external IP
+```
+Set this IP as value for your DNS A record.
 
 ## Project control script, all what you need
 ```sh
 $ ./project -a (start|stop)
 $ ./project -a rebuild [-t <nginx|php-fpm|database>]
-$ ./project -a deploy -v 0.1.2
+$ ./project -a deploy -v (break|nobreak|fixup)"
 $ ./project -a tests
 ```
 

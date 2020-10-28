@@ -1,5 +1,7 @@
 #!/bin/bash
 
+source ./kubernetes/project_info
+
 usage () {
   echo "Example syntax: symfony -a start"
   echo "  -a (start|stop)"
@@ -48,7 +50,6 @@ subRebuild () {
   esac
 }
 subDeploy () {
-  echo "Deploy"
   source kubernetes/app_version
 
 VERSION_NGINX_BREAK="$(cut -d'.' -f1 <<<"$VERSION_NGINX")"
@@ -94,22 +95,26 @@ VERSION_PHP_FPM_FIXUP="$(cut -d'.' -f3 <<<"$VERSION_PHP_FPM")"
   NEW_VERSION_NGINX="$VERSION_NGINX_BREAK.$VERSION_NGINX_NOBREAK.$VERSION_NGINX_FIXUP"
   NEW_VERSION_PHP_FPM="$VERSION_PHP_FPM_BREAK.$VERSION_PHP_FPM_NOBREAK.$VERSION_PHP_FPM_FIXUP"
 
-  docker build -f docker/php-fpm/Dockerfile-prod -t gcr.io/symfony-1/php-fpm:$NEW_VERSION_NGINX .
-  docker build -f docker/nginx/Dockerfile-prod -t gcr.io/symfony-1/nginx:$NEW_VERSION_PHP_FPM .
+  docker build -f docker/php-fpm/Dockerfile-prod -t gcr.io/$PROJECT_ID/php-fpm:$NEW_VERSION_NGINX .
+  docker build -f docker/nginx/Dockerfile-prod -t gcr.io/$PROJECT_ID/nginx:$NEW_VERSION_PHP_FPM .
 
-  docker push gcr.io/symfony-1/nginx:$NEW_VERSION_NGINX
-  docker push gcr.io/symfony-1/php-fpm:$NEW_VERSION_PHP_FPM
+  docker push gcr.io/$PROJECT_ID/nginx:$NEW_VERSION_NGINX
+  docker push gcr.io/$PROJECT_ID/php-fpm:$NEW_VERSION_PHP_FPM
 
   echo "VERSION_NGINX=$NEW_VERSION_NGINX" > kubernetes/app_version
   echo "VERSION_PHP_FPM=$NEW_VERSION_PHP_FPM" >> kubernetes/app_version
 
   sed "s/VERSION_PLACEHOLDER/$NEW_VERSION_NGINX/g" kubernetes/nginx_deployment.yaml > kubernetes/nginx_deployment_fill.yaml
+  sed -ie "s/PROJECT_ID_PLACEHOLDER/$PROJECT_ID/g" kubernetes/nginx_deployment_fill.yaml
+
   sed "s/VERSION_PLACEHOLDER/$NEW_VERSION_PHP_FPM/g" kubernetes/php_deployment.yaml > kubernetes/php_deployment_fill.yaml
+  sed -ie "s/PROJECT_ID_PLACEHOLDER/$PROJECT_ID/g" kubernetes/php_deployment_fill.yaml
 
   kubectl apply -f kubernetes/nginx_deployment_fill.yaml
   kubectl apply -f kubernetes/php_deployment_fill.yaml
 
   rm kubernetes/nginx_deployment_fill.yaml kubernetes/php_deployment_fill.yaml
+  rm kubernetes/nginx_deployment_fill.yamle kubernetes/php_deployment_fill.yamle
 
   kubectl get pods
   kubectl get svc
