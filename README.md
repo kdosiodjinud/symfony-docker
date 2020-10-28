@@ -13,6 +13,7 @@ All commands are run in the root directory.
 |./src/.env.prod| app env variables for prod development (production build remove this file to .env)|
 |./src/.env.test| app env variables for test development|
 
+
 ## Create gCloud ENV
 ### First you need gcloud SDK
 How to install: https://cloud.google.com/sdk/docs/install
@@ -23,6 +24,7 @@ Prepare it (insert payment card) before start init!
 ```sh
 ./init
 ```
+
 ### Custom domain for your gcloud app
 ```sh 
 $ kubectl get svc   <-- show you LoadBalancer external IP
