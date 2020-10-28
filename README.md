@@ -11,6 +11,22 @@ All commands are run in the root directory.
 |./src/.env.prod| app env variables for prod development (production build remove this file to .env)|
 |./src/.env.test| app env variables for test development|
 
+## Project control script, all what you need
+```sh
+$ ./project -a (start|stop)
+$ ./project -a rebuild [-t <nginx|php-fpm|database>]
+$ ./project -a deploy -v 0.1.2
+$ ./project -a tests
+```
+
+That's all!
+
+---
+
+# For understanding control script, here is manual way
+
+---
+
 ## Local development
 Start postgres db (no-persist), php-fpm and nginx listening on localhost:80
 ```
@@ -30,7 +46,7 @@ $ docker ps                                 <-- list running containers
 $ docker exec -it [container_id] /bin/bash  <-- connect into container
 ```
 
-## Deploy on cloud - manual (for understanding)
+## Deploy on cloud
 
 > **WARNING: This section is in development!**
 >
