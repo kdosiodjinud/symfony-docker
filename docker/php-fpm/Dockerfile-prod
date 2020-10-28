@@ -22,9 +22,10 @@ RUN pecl install raphf propro && \
 
 COPY --from=composer /usr/bin/composer /usr/bin/composer
 
-ARG CACHE_VERSION=1
+ARG CACHE_VERSION=2
 
 COPY ./src/ /var/www/
+COPY ./src/.env.prod /var/www/.env
 
 WORKDIR /var/www
 
