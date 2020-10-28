@@ -30,7 +30,7 @@ $ docker ps                                 <-- list running containers
 $ docker exec -it [container_id] /bin/bash  <-- connect into container
 ```
 
-## Deploy on cloud
+## Deploy on cloud - manual (for understanding)
 
 > **WARNING: This section is in development!**
 >
@@ -58,7 +58,7 @@ $ docker build -f docker/nginx/Dockerfile-prod -t gcr.io/symfony-1/nginx:0.0.1 .
 
 ### Push images to Google docker registry
 ```sh
-$ docker push gcr.io/symfony-1/php-fpm:0.0.1`
+$ docker push gcr.io/symfony-1/php-fpm:0.0.1
 $ docker push gcr.io/symfony-1/nginx:0.0.1
 ```
 

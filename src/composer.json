@@ -64,7 +64,7 @@
             "@auto-scripts"
         ],
         "analyze": [
-            "@ecs-fix",
+            "@ecs",
             "@phpunit",
             "@phpstan"
         ],

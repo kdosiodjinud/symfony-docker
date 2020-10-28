@@ -105,7 +105,7 @@ return [
 	'dependencies' => array (
   '/var/www/src/Controller/HomeController.php' => 
   array (
-    'fileHash' => '0fe7bf26cc843beacd2212fa723eed765ee498a9',
+    'fileHash' => '43c56f8d579d25945533831d59d8d035c88c69c6',
     'dependentFiles' => 
     array (
     ),

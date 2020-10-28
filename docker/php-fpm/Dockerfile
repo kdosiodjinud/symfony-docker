@@ -1,6 +1,6 @@
 FROM php:fpm-alpine
 
-COPY wait-for-it.sh /usr/bin/wait-for-it
+COPY ./docker/php-fpm/wait-for-it.sh /usr/bin/wait-for-it
 
 RUN chmod +x /usr/bin/wait-for-it
 
