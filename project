@@ -1,6 +1,16 @@
 #!/bin/bash
 
-source ./kubernetes/project_info
+DEPLOY_BLOCKED=true
+COMPOSE_PROJECT_NAME="symfony"
+
+INSTALLED=./kubernetes/project_info
+if test -f "$INSTALLED"; then
+    DEPLOY_BLOCKED=false
+    source ./kubernetes/project_info
+    COMPOSE_PROJECT_NAME=${PROJECT_ID}
+fi
+
+export COMPOSE_PROJECT_NAME
 
 usage () {
   echo "Example syntax: symfony -a start"
@@ -50,6 +60,12 @@ subRebuild () {
   esac
 }
 subDeploy () {
+
+  if DEPLOY_BLOCKED; then
+      echo "Init project first! (./init)"
+      exit;
+  fi
+
   source kubernetes/app_version
 
 VERSION_NGINX_BREAK="$(cut -d'.' -f1 <<<"$VERSION_NGINX")"
@@ -136,7 +152,7 @@ case "$ACTION" in
     ("start") subStart; exit;;
     ("stop") subStop; exit;;
     ("rebuild") subRebuild "$REBUILD_TYPE"; exit;;
-    ("deploy") subDeploy "$DEPLOY_TYPE"; exit;;
+    ("deploy") subDeploy "$DEPLOY_TYPE" "$DEPLOY_BLOCKED"; exit;;
     ("tests") subTests "$DEPLOY_TYPE"; exit;;
     (*) echo "-a must be included with value (start|stop|rebuild|deploy)" >&2; exit 1 ;;
 esac
