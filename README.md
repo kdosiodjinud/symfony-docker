@@ -7,8 +7,8 @@ All commands are run in the root directory.
 | Path | Usage |
 | ------ | ------ |
 |./docker/.env| build env variables for build via docker-compose (db credentials etc.)|
-|./kubernetes/app_version| deployed images versions (use for next build)|
-|./kubernetes/project_info| after init project store info about google project id|
+|./google-kubernetes/app_version| deployed images versions (use for next build)|
+|./google-kubernetes/project_info| after init project store info about google project id|
 |./src/.env| app env variables for local development|
 |./src/.env.prod| app env variables for prod development (production build remove this file to .env)|
 |./src/.env.test| app env variables for test development|
@@ -22,7 +22,7 @@ How to install: https://cloud.google.com/sdk/docs/install
 Before start init check your google - gcloud require billing account! 
 Prepare it (insert payment card) before start init!
 ```sh
-./init
+./initGoogleKubernetes
 ```
 
 ### Custom domain for your gcloud app
@@ -102,9 +102,9 @@ $ docker push gcr.io/symfony-1/nginx:0.0.1
 *You muset edit files and set right version - sorry. Soon* 
 
 ```sh
-$ kubectl apply -f kubernetes/php_service.yaml
-$ kubectl apply -f kubernetes/php_deployment.yaml
-$ kubectl apply -f kubernetes/nginx_deployment.yaml
+$ kubectl apply -f google-kubernetes/php_service.yaml
+$ kubectl apply -f google-kubernetes/php_deployment.yaml
+$ kubectl apply -f google-kubernetes/nginx_deployment.yaml
 ```
 
 ### Setup LoadBalancer for incoming traffic

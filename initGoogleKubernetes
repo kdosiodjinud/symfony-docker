@@ -1,6 +1,6 @@
 #!/bin/bash
 
-INSTALLED=./kubernetes/project_info
+INSTALLED=./google-kubernetes/project_info
 if test -f "$INSTALLED"; then
     echo "Project is inicialized!"
     exit
@@ -46,7 +46,7 @@ gcloud auth login
 gcloud config set account ${USER_GMAIL}
 
 gcloud projects create ${PROJECT_ID} --name="${PROJECT_NAME}"
-echo "PROJECT_ID=${PROJECT_ID}" > ./kubernetes/project_info
+echo "PROJECT_ID=${PROJECT_ID}" > ./google-kubernetes/project_info
 
 gcloud projects list
 
@@ -138,21 +138,21 @@ docker push gcr.io/${PROJECT_ID}/nginx:0.0.1
 
 echo "First deployment:"
 echo "- create php service"
-kubectl apply -f kubernetes/php_service.yaml
+kubectl apply -f google-kubernetes/php_service.yaml
 
 echo "- create php-fpm deploy"
-sed "s/VERSION_PLACEHOLDER/0.0.1/g" kubernetes/php_deployment.yaml > kubernetes/php_deployment_fill.yaml
-sed -ie "s/PROJECT_ID_PLACEHOLDER/${PROJECT_ID}/g" kubernetes/php_deployment_fill.yaml
-kubectl apply -f kubernetes/php_deployment_fill.yaml
+sed "s/VERSION_PLACEHOLDER/0.0.1/g" google-kubernetes/php_deployment.yaml > google-kubernetes/php_deployment_fill.yaml
+sed -ie "s/PROJECT_ID_PLACEHOLDER/${PROJECT_ID}/g" google-kubernetes/php_deployment_fill.yaml
+kubectl apply -f google-kubernetes/php_deployment_fill.yaml
 
 echo "- create nginx deploy"
-sed "s/VERSION_PLACEHOLDER/0.0.1/g" kubernetes/nginx_deployment.yaml > kubernetes/nginx_deployment_fill.yaml
-sed -ie "s/PROJECT_ID_PLACEHOLDER/${PROJECT_ID}/g" kubernetes/nginx_deployment_fill.yaml
-kubectl apply -f kubernetes/nginx_deployment_fill.yaml
+sed "s/VERSION_PLACEHOLDER/0.0.1/g" google-kubernetes/nginx_deployment.yaml > google-kubernetes/nginx_deployment_fill.yaml
+sed -ie "s/PROJECT_ID_PLACEHOLDER/${PROJECT_ID}/g" google-kubernetes/nginx_deployment_fill.yaml
+kubectl apply -f google-kubernetes/nginx_deployment_fill.yaml
 
 echo "- clean up"
-rm kubernetes/nginx_deployment_fill.yaml kubernetes/php_deployment_fill.yaml
-rm kubernetes/nginx_deployment_fill.yamle kubernetes/php_deployment_fill.yamle
+rm google-kubernetes/nginx_deployment_fill.yaml google-kubernetes/php_deployment_fill.yaml
+rm google-kubernetes/nginx_deployment_fill.yamle google-kubernetes/php_deployment_fill.yamle
 
 echo "Create LoadBalancer:"
 kubectl expose deployment nginx --port=80 --type=LoadBalancer

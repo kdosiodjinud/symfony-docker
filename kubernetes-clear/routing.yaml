@@ -1,0 +1,16 @@
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+  annotations:
+    kubernetes.io/ingress.class: haproxy
+  name: haproxy
+  namespace: symfony
+spec:
+  rules:
+    - host: symfony-vps.reddwarf.cloud
+      http:
+        paths:
+          - backend:
+              serviceName: nginx
+              servicePort: 80
+            path: /
