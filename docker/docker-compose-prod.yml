@@ -12,23 +12,15 @@ services:
 
   php-fpm:
     container_name: php-fpm
-    build:
-      context: ../
-      dockerfile: docker/php-fpm/Dockerfile
+    image: kdosiodjinud/php-fpm:1.0.0
     depends_on:
       - database
-    volumes:
-      - ../src:/var/www
     ports:
       - "9000:9000"
 
   apache:
     container_name: apache
-    build:
-      context: ../
-      dockerfile: docker/apache/Dockerfile
-    volumes:
-      - ../src:/var/www
+    image: kdosiodjinud/apache:1.0.0
     depends_on:
       - php-fpm
     links:
@@ -39,14 +31,7 @@ services:
 
 #  nginx:
 #    container_name: nginx
-#    build:
-#      context: ../
-#      dockerfile: docker/nginx/Dockerfile
-#    volumes:
-#      - ../src:/var/www
-#      - ../docker/nginx/nginx.conf:/etc/nginx/nginx.conf
-#      - ../docker/nginx/sites-available:/etc/nginx/sites-available
-#      - ../docker/nginx/logs:/var/log
+#    image: kdosiodjinud/nginx:1.0.0
 #    depends_on:
 #      - php-fpm
 #    ports:

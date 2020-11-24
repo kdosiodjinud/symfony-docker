@@ -3,21 +3,20 @@ kind: Deployment
 metadata:
   name: nginx
   labels:
-    tier: backend
+    app: nginx
 spec:
   replicas: 1
   selector:
     matchLabels:
       app: nginx
-      tier: backend
   template:
     metadata:
       labels:
         app: nginx
-        tier: backend
     spec:
       containers:
-        - name: nginx
-          image: kdosiodjinud/nginx:0.0.1
-          ports:
-            - containerPort: 80
+      - name: nginx
+        image: kdosiodjinud/nginx:2.0.4
+        imagePullPolicy: Always
+        ports:
+          - containerPort: 80

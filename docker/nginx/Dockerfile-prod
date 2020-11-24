@@ -7,8 +7,6 @@ CMD ["nginx"]
 COPY ./docker/nginx/nginx.conf /etc/nginx/nginx.conf
 COPY ./docker/nginx/sites-available/ /etc/nginx/sites-available
 
-ARG CACHE_VERSION=1
-
 COPY ./src/public /var/www/public
 
 EXPOSE 80 443

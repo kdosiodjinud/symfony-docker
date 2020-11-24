@@ -1,34 +1,25 @@
-FROM php:fpm-alpine
+FROM php:7.4-fpm-alpine
 
-COPY ./docker/php-fpm/wait-for-it.sh /usr/bin/wait-for-it
+COPY --from=mlocati/php-extension-installer /usr/bin/install-php-extensions /usr/bin/
 
+COPY ./docker/php-fpm/wait-for-it /usr/bin/wait-for-it
 RUN chmod +x /usr/bin/wait-for-it
 
-RUN apk --update --no-cache add git vim bash
+#COPY --from=composer /usr/bin/composer /usr/bin/composer
+RUN curl -sS https://getcomposer.org/composer-1.phar -o /usr/bin/composer && chmod 700 /usr/bin/composer
 
-RUN set -ex && apk --no-cache add postgresql-dev
+RUN apk --update --no-cache add vim bash
 
-RUN docker-php-ext-install pdo pdo_pgsql
+RUN install-php-extensions pdo_pgsql http
 
-RUN apk add --update --virtual .build-deps autoconf g++ make zlib-dev curl-dev libidn2-dev libevent-dev icu-dev libidn-dev
-
-RUN pecl install raphf propro && \
-    docker-php-ext-enable raphf propro && \
-    pecl install pecl_http && \
-    echo -e "extension=raphf.so\nextension=propro.so\nextension=http.so" > /usr/local/etc/php/conf.d/docker-php-ext-http.ini && \
-    rm -rf /usr/local/etc/php/conf.d/docker-php-ext-raphf.ini && \
-    rm -rf /usr/local/etc/php/conf.d/docker-php-ext-propro.ini && \
-    rm -rf /tmp/*
-
-COPY --from=composer /usr/bin/composer /usr/bin/composer
-
-ARG CACHE_VERSION=2
+RUN mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini"
 
 COPY ./src/ /var/www/
-COPY ./src/.env.prod /var/www/.env
 
 WORKDIR /var/www
 
-CMD composer install ;  php-fpm
+#CMD composer install ; wait-for-it postgres:5432 -- bin/console --no-interaction doctrine:migrations:migrate ; php-fpm
+
+CMD php-fpm
 
 EXPOSE 9000

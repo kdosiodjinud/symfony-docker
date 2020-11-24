@@ -1,0 +1,60 @@
+#!/bin/bash
+
+usage () {
+  echo "Example syntax: symfony -a start"
+  echo "  -a (start|stop)"
+  echo "  -a rebuild [-t <nginx|php-fpm>]"
+  echo "  -a deploy -v (break|nobreak|fixup)"
+  echo "  -a tests"
+}
+
+while getopts ':a:h:t:v:' option
+do
+    case "$option" in
+        a  ) ACTION=${OPTARG};;
+        t  ) REBUILD_TYPE=${OPTARG};;
+        v  ) DEPLOY_TYPE=${OPTARG};;
+        h  ) usage; exit;;
+        \? ) echo "Unknown option: -$OPTARG" >&2; exit 1;;
+        :  ) echo "Missing option argument for -$OPTARG" >&2; exit 1;;
+        *  ) echo "Unimplemented option: -$OPTARG" >&2; exit 1;;
+    esac
+done
+
+subStart () {
+  echo "Starting local stack (and rebuild)"
+  docker-compose -p symfony -f ./docker/docker-compose.yml up --build
+  echo "Running on: http://localhost"
+}
+
+subStop () {
+  echo "Stoping local stack"
+  docker-compose -f ./docker/docker-compose.yml stop
+}
+
+subRebuild () {
+  case "$REBUILD_TYPE" in
+    ("nginx")
+      echo "Rebuild nginx"
+      docker build -f ./docker/nginx/Dockerfile . --no-cache
+    exit;;
+    ("php-fpm")
+      echo "Rebuild php-fpm"
+      docker build -f ./docker/php-fpm/Dockerfile . --no-cache
+    exit;;
+    (*)
+      echo "Rebuild nginx + php-fpm"
+      docker build -f ./docker/nginx/Dockerfile . --no-cache
+      docker build -f ./docker/php-fpm/Dockerfile . --no-cache
+    exit;;
+  esac
+}
+
+case "$ACTION" in
+    ("start") subStart; exit;;
+    ("stop") subStop; exit;;
+    ("rebuild") subRebuild "$REBUILD_TYPE"; exit;;
+    ("deploy") subDeploy "$DEPLOY_TYPE" "$DEPLOY_BLOCKED"; exit;;
+    ("tests") subTests "$DEPLOY_TYPE"; exit;;
+    (*) echo "-a must be included with value (start|stop|rebuild|deploy)" >&2; exit 1 ;;
+esac

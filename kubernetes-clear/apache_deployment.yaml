@@ -1,23 +1,23 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: php-fpm
+  name: apache
   namespace: symfony
   labels:
-    app: php-fpm
+    app: apache
 spec:
   replicas: 2
   selector:
     matchLabels:
-      app: php-fpm
+      app: apache
   template:
     metadata:
       labels:
-        app: php-fpm
+        app: apache
     spec:
       containers:
-      - name: php-fpm
-        image: kdosiodjinud/php-fpm:2.0.8
+      - name: apache
+        image: kdosiodjinud/apache:0.0.1
         imagePullPolicy: Always
         ports:
-          - containerPort: 9000
+          - containerPort: 80
