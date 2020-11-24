@@ -18,8 +18,6 @@ COPY ./src/ /var/www/
 
 WORKDIR /var/www
 
-#CMD composer install ; wait-for-it postgres:5432 -- bin/console --no-interaction doctrine:migrations:migrate ; php-fpm
-
-CMD php-fpm
+CMD composer install ; wait-for-it postgres:5432 -- bin/console --no-interaction doctrine:migrations:migrate ; php-fpm
 
 EXPOSE 9000

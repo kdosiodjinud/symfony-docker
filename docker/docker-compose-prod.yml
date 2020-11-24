@@ -29,13 +29,4 @@ services:
       - "80:80"
       - "443:443"
 
-#  nginx:
-#    container_name: nginx
-#    image: kdosiodjinud/nginx:1.0.0
-#    depends_on:
-#      - php-fpm
-#    ports:
-#      - "80:80"
-#      - "443:443"
-
 
