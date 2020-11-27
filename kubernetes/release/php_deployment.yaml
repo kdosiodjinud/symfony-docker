@@ -16,8 +16,8 @@ spec:
         app: php-fpm
     spec:
       containers:
-      - name: php-fpm
-        image: kdosiodjinud/php-fpm:2.0.8
+      - name: php-fpms
+        image: $IMAGE_PHP_FPM
         imagePullPolicy: Always
         ports:
           - containerPort: 9000

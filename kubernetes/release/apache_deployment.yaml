@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
       - name: apache
-        image: kdosiodjinud/apache:0.0.1
+        image: $IMAGE_APACHE
         imagePullPolicy: Always
         ports:
           - containerPort: 80
