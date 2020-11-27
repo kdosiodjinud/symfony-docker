@@ -3,7 +3,7 @@ name: Create and push PROD images to repository
 on:
   push:
     tags:
-      - 'v*.*.*'
+      - '*.*.*'
 
 jobs:
   run-tests:
