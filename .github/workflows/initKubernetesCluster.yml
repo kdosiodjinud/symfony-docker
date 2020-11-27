@@ -1,5 +1,10 @@
 name: Init Kubernetes cluster
 
+on:
+  push:
+    tags:
+      - 'init.*'
+
 jobs:
   init:
     runs-on: ubuntu-latest
