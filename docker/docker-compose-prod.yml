@@ -1,0 +1,32 @@
+version: '3'
+services:
+  database:
+    container_name: database
+    image: postgres:10.4
+    environment:
+      POSTGRES_DB: symfony
+      POSTGRES_USER: appuser
+      POSTGRES_PASSWORD: apppassword
+    ports:
+      - "5432:5432"
+
+  php-fpm:
+    container_name: php-fpm
+    image: kdosiodjinud/php-fpm:1.0.0
+    depends_on:
+      - database
+    ports:
+      - "9000:9000"
+
+  apache:
+    container_name: apache
+    image: kdosiodjinud/apache:1.0.0
+    depends_on:
+      - php-fpm
+    links:
+      - php-fpm:php-fpm
+    ports:
+      - "80:80"
+      - "443:443"
+
+

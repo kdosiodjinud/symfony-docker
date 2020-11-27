@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: postgres-config
+  namespace: symfony
+  labels:
+    app: postgres
+data:
+  POSTGRES_DB: symfony
+  POSTGRES_USER: appuser
+  POSTGRES_PASSWORD: apppassword

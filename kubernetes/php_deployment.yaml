@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: php-fpm
+  namespace: symfony
+  labels:
+    app: php-fpm
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: php-fpm
+  template:
+    metadata:
+      labels:
+        app: php-fpm
+    spec:
+      containers:
+      - name: php-fpm
+        image: kdosiodjinud/php-fpm:2.0.8
+        imagePullPolicy: Always
+        ports:
+          - containerPort: 9000

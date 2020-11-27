@@ -1,0 +1,31 @@
+name: cli
+help: Symfony application
+version: 0.0.1
+
+commands:
+- name: bash
+  help: Get bash from php-fpm container
+  examples:
+    - cli bash
+- name: start
+  help: Start application containers
+  examples:
+    - cli start
+- name: stop
+  help: Stop application containers
+  examples:
+    - cli stop
+- name: tests
+  help: Run test in PHP container
+  args:
+    - name: type
+      default: all
+      required: false
+      help: Test for run
+  examples:
+    - cli tests
+    - cli tests phpstan
+    - cli tests phpunit
+    - cli tests ecs
+
+
