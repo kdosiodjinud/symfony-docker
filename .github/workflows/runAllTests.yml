@@ -1,0 +1,27 @@
+name: Before merge checks
+
+on: [push]
+
+jobs:
+  check-fixups:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2.0.0
+      - name: Block Fixup Commit Merge
+        uses: 13rac1/block-fixup-merge-action@v1.1.2
+  run-tests:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2.0.0
+    - name: Build php-fpm image
+      run: docker build -f ./docker/php-fpm/Dockerfile-test -t php-fpm-for-tests:test .
+    - name: Start php-fpm container
+      run: docker run -d --name testContainer -v "/home/runner/work/symfony-docker/symfony-docker/app":"/var/www" php-fpm-for-tests:test
+    - name: Prepare container
+      run: docker exec testContainer composer install
+    - name: Run PHPUnit
+      run: docker exec testContainer composer phpunit
+    - name: Run PHPStan
+      run: docker exec testContainer composer phpstan
+    - name: Run ecs
+      run: docker exec testContainer composer ecs

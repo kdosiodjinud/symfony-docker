@@ -1,0 +1,28 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: php-fpm
+  namespace: symfony
+  labels:
+    app: php-fpm
+spec:
+  replicas: 4
+  selector:
+    matchLabels:
+      app: php-fpm
+  template:
+    metadata:
+      labels:
+        app: php-fpm
+    spec:
+      containers:
+      - name: php-fpm
+        image: #{IMAGE_PHP_FPM}#
+        envFrom:
+          - secretRef:
+              name: symfony-secrets
+        imagePullPolicy: Always
+        ports:
+          - containerPort: 9000
+      imagePullSecrets:
+        - name: regcred

@@ -1,0 +1,25 @@
+imports:
+  - { resource: './vendor/lmc/coding-standard/easy-coding-standard.yaml' }
+
+services:
+  # Line length should not exceed 120 characters
+  PHP_CodeSniffer\Standards\Generic\Sniffs\Files\LineLengthSniff:
+    absoluteLineLimit: 120
+    lineLimit: 120
+  PhpCsFixer\Fixer\Whitespace\BlankLineBeforeStatementFixer:
+    statements:
+      - return
+      - try
+      - if
+      - foreach
+
+parameters:
+  skip:
+    PHP_CodeSniffer\Standards\Generic\Sniffs\PHP\ForbiddenFunctionsSniff:
+      - 'src/Kernel.php'
+    PHP_CodeSniffer\Standards\Generic\Sniffs\Files\LineLengthSniff.MaxExceeded:
+      - 'src/Kernel.php'
+    PHP_CodeSniffer\Standards\Generic\Sniffs\PHP\ForbiddenFunctionsSniff.Found:
+      - 'tests/bootstrap.php'
+    PHP_CodeSniffer\Standards\Generic\Sniffs\Files\LineLengthSniff:
+      - 'src/Migrations/**'
