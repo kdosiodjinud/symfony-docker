@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: php-fpm
-  namespace: symfony
+  namespace: #{APP_NAMESPACE}#
   labels:
     app: php-fpm
 spec:
@@ -20,7 +20,7 @@ spec:
         image: #{IMAGE_PHP_FPM}#
         envFrom:
           - secretRef:
-              name: symfony-secrets
+              name: app-secrets
         imagePullPolicy: Always
         ports:
           - containerPort: 9000

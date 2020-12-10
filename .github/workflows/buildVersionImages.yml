@@ -12,7 +12,7 @@ jobs:
       - name: Build php-fpm image
         run: docker build -f ./docker/php-fpm/Dockerfile-test -t php-fpm-for-tests:test .
       - name: Start php-fpm container
-        run: docker run -d --name testContainer -v "/home/runner/work/symfony-docker/symfony-docker/app":"/var/www" php-fpm-for-tests:test
+        run: docker run -d --name testContainer -v "/home/runner/work/${GITHUB_REPOSITORY#*/}/${GITHUB_REPOSITORY#*/}/app":"/var/www" php-fpm-for-tests:test
       - name: Prepare container
         run: docker exec testContainer composer install
       - name: Run PHPUnit

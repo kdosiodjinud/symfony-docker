@@ -75,8 +75,22 @@ Your images you can find on your github profile under "Packages" tab.
 |CR_PAT| with token for image repository (from previous step) |
 
 ## Init production
+### Set Kubernetes namespace
+All configs use namespace attribute. Namespace is generated from your github 
+username/repo (repo must be cloned with git), for example:
+```sh
+Repo: git@github.com:kdosiodjinud/symfony-docker.git
+Generated namespace: kdosiodjinud-symfony-docker
+```
+
+Becouse project is universal, you must init script for replace namespaces in your cloned version:
+```sh
+./cli init
+```
+That`s all! :)
+
 ### Services
-Look at the kubernetes/init/secrets.yaml file and config your settings for production.
+Look at the **kubernetes/init/secrets.yaml** file and config your settings for production.
 After check apply configure all files from folder init:
 
 ```sh

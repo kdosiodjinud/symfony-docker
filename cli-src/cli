@@ -28,6 +28,7 @@ cli_usage() {
   echo "  start   Start application containers"
   echo "  stop    Stop application containers"
   echo "  tests   Run test in PHP container"
+  echo "  init    Update config files for your settings (dependent to .git and github repository)"
   echo
 
   if [[ -n $long_usage ]]; then
@@ -179,6 +180,31 @@ cli_tests_usage() {
   fi
 }
 
+# :command.usage
+cli_init_usage() {
+  if [[ -n $long_usage ]]; then
+    printf "cli init - Update config files for your settings (dependent to .git and github repository)\n"
+    echo 
+  else
+    printf "cli init - Update config files for your settings (dependent to .git and github repository)\n"
+    echo 
+  fi
+
+  printf "Usage:\n"
+  printf "  cli init\n"
+  printf "  cli init --help | -h\n"
+  echo
+
+  if [[ -n $long_usage ]]; then
+    printf "Options:\n"
+    # :command.usage_fixed_flags
+    echo "  --help, -h"
+    printf "    Show this help\n"
+    echo
+
+  fi
+}
+
 # :command.inspect_args
 inspect_args() {
   echo args:
@@ -235,6 +261,16 @@ cli_tests_command() {
   esac
 }
 
+# :command.function
+cli_init_command() {
+  # :src/init_command.sh
+  GIT_REPO_NAME=$(cut -d ":" -f2 <<< $(git config --get remote.origin.url))
+  REPO_NAME=${GIT_REPO_NAME/.git/}
+  APP_NAMESPACE=${REPO_NAME/\//-}
+  
+  find ./kubernetes/ -type f -exec sed -i '' -e "s/#{APP_NAMESPACE}#/$APP_NAMESPACE/g" {} \;
+}
+
 # :command.parse_requirements
 parse_requirements() {
   # :command.fixed_flag_filter
@@ -285,6 +321,13 @@ parse_requirements() {
     action="tests"
     shift
     cli_tests_parse_requirements "$@"
+    shift $#
+    ;;    
+  
+  init )
+    action="init"
+    shift
+    cli_init_parse_requirements "$@"
     shift $#
     ;;    
   
@@ -495,6 +538,49 @@ cli_tests_parse_requirements() {
   [[ -n ${args[type]} ]] || args[type]="all"
 }
 
+# :command.parse_requirements
+cli_init_parse_requirements() {
+  # :command.fixed_flag_filter
+  case "$1" in
+  --version | -v )
+    version_command
+    exit
+    ;;
+  
+  --help | -h )
+    long_usage=yes
+    cli_init_usage
+    exit 1
+    ;;
+  
+  esac
+  # :command.environment_variables_filter
+  # :command.dependencies_filter
+  # :command.command_filter
+  action="init"
+  # :command.required_args_filter
+  # :command.required_flags_filter
+  # :command.parse_requirements_while
+  while [[ $# -gt 0 ]]; do
+    key="$1"
+    case "$key" in
+  
+    -* )
+      printf "invalid option: %s\n" "$key"
+      exit 1
+      ;;
+  
+    * )
+      # :command.parse_requirements_case
+      printf "invalid argument: %s\n" "$key"
+      exit 1
+      ;;
+  
+    esac
+  done
+  # :command.default_assignments
+}
+
 # :command.initialize
 initialize() {
   version="0.0.1"
@@ -545,6 +631,14 @@ run() {
       cli_tests_usage
     else
       cli_tests_command
+    fi
+  
+  elif [[ $action == "init" ]]; then
+    if [[ ${args[--help]} ]]; then
+      long_usage=yes
+      cli_init_usage
+    else
+      cli_init_command
     fi
   
   elif [[ ${args[--version]} ]]; then

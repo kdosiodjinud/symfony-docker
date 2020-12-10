@@ -27,5 +27,7 @@ commands:
     - cli tests phpstan
     - cli tests phpunit
     - cli tests ecs
+- name: init
+  help: Update config files for your settings (dependent to .git and github repository)
 
 

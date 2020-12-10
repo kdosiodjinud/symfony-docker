@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: apache
-  namespace: symfony
+  namespace: #{APP_NAMESPACE}#
   labels:
     app: apache
 spec:
